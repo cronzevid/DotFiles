@@ -268,4 +268,23 @@ mstrace() {
   stdbuf -i0 -o0 -e0 strace -ttf -xx -p 25199 -s 9999 -e write 2>&1 | parse_strace $2
 }
 
+function ip_drop() {
+    if [[ -z $1 ]]; then
+        echo "No ip to block";
+        echo "Usage: ip_drop <ipv4 adress>";
+        return 1;
+    elif [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        echo "$1 added to iptables";
+        iptables -A INPUT -s $1 -j DROP;
+        return 0;
+    else
+        echo "Invalid input";
+        return 1;
+    fi
+}
+
+function ssh () {
+    /usr/bin/ssh -t $@ "tmux attach || tmux new";
+}
+
 eval $(thefuck --alias)
